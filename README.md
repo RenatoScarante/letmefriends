@@ -1,4 +1,3 @@
-# LetMeFriends
+<h1 align="center"> LetMeFriends </h1>
 
-# lowdb 
-https://github.com/typicode/lowdb/tree/v0.13.0-beta.4
+https://img.shields.io/static/v1?label=<LABEL>&message=<MESSAGE>&color=<COLOR>
