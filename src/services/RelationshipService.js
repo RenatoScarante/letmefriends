@@ -1,13 +1,12 @@
 const BaseService = require("./BaseService");
-const RelationshipRepository = require("../repositories/RelationshipRepository");
+const Repository = require("../repositories/RelationshipRepository");
 const PersonRepository = require("../repositories/PersonRepository");
-const reject = ("any-promise");
 
 const personRepository = new PersonRepository();
 
 class RelationshipService extends BaseService {
   constructor() {
-    super(new RelationshipRepository());
+    super(new Repository());
   }
 
   async create(newRelationship) {
@@ -52,17 +51,29 @@ class RelationshipService extends BaseService {
     });
   }
 
-  get = (relationship) => {
+  async get(relationship) {
     var { cpf1, cpf2 } = relationship;
 
     return new Promise((resolve, reject) => {
-      this._repository.find({ cpf1: cpf1 } && { cpf2: cpf2 })
-        .then(relationship => {
-          if (relationship !== undefined) {
-            resolve(relationship);
+      this._repository.filter({ cpf1: cpf1 })
+        .then(relationships => {
+          if (relationships === undefined || relationships.length === 0) {
+            reject("Relationship not exists.");
           }
           else {
-            reject("Relationship not exists.");
+            if (relationships.length === 1) {
+              relationship = relationships[0];
+            }
+            else {
+              relationship = relationships.find(relationship => relationship.cpf2 === cpf2);
+            }
+
+            if (relationship.cpf2 === cpf2) {
+              resolve(relationship);
+            }
+            else {
+              reject("Relationship not exists.");
+            }
           }
         })
         .catch(error => reject(new Error(error)))
@@ -83,6 +94,31 @@ class RelationshipService extends BaseService {
       this._repository.delete({ cpf1: cpf1 } && { cpf2: cpf2 })
         .then(() => {
           resolve(relationship);
+        })
+        .catch(error => reject(new Error(error)))
+    });
+  };
+
+  async getAll() {
+    return new Promise((resolve, reject) => {
+      this._repository.getAll()
+        .then(relationships => {
+          if (relationships !== undefined) {
+            resolve(relationships);
+          }
+          else {
+            reject("Relationships empty.");
+          }
+        })
+        .catch(error => reject(new Error(error)))
+    })
+  };
+
+  async filter(filter) {
+    return new Promise((resolve, reject) => {
+      this._repository.filter(filter)
+        .then(relationships => {
+          resolve(relationships);
         })
         .catch(error => reject(new Error(error)))
     });

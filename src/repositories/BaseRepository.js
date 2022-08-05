@@ -7,20 +7,36 @@ class BaseRepository {
     this._table = table;
   }
 
-  getById = async id => new Promise((resolve, reject) => {
-    try {
-      const item = db.get(this._table)
-        .getById(id)
-        .value();
+  getById = async id => {
+    return new Promise((resolve, reject) => {
+      try {
+        const item = db.get(this._table)
+          .getById(id)
+          .value();
 
-      resolve(item);
-    }
-    catch (err) {
-      reject(err);
-    }
-  });
+        resolve(item);
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
 
-  find = filter => {
+  getAll = async () => {
+    return new Promise((resolve, reject) => {
+      try {
+        const items = db.get(this._table)
+          .value();
+
+        resolve(items);
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
+
+  find = async filter => {
     return new Promise((resolve, reject) => {
       try {
         const item = db.get(this._table)
@@ -35,59 +51,99 @@ class BaseRepository {
     })
   };
 
-  insert = data => new Promise((resolve, reject) => {
-    try {
-      const item = db.get(this._table)
-        .insert(data)
-        .value();
+  insert = async data => {
+    return new Promise((resolve, reject) => {
+      try {
+        const item = db.get(this._table)
+          .insert(data)
+          .value();
 
-      db.write();
+        db.write();
 
-      resolve(item);
-    }
-    catch (err) {
-      reject(err);
-    }
-  });
+        resolve(item);
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
 
-  update = async data => new Promise((resolve, reject) => {
-    try {
-      const item = db.get(this._table)
-        .getById(data.id)
-        .assign(data)
-        .write();
+  update = async data => {
+    return new Promise((resolve, reject) => {
+      try {
+        const item = db.get(this._table)
+          .getById(data.id)
+          .assign(data)
+          .write();
 
-      resolve(item);
-    }
-    catch (err) {
-      reject(err);
-    }
-  });
+        resolve(item);
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
 
-  delete = async filter => new Promise((resolve, reject) => {
-    try {
-      db.get(this._table)
-        .remove(filter)
-        .write();
+  delete = async filter => {
+    return new Promise((resolve, reject) => {
+      try {
+        db.get(this._table)
+          .remove(filter)
+          .write();
 
-      resolve();
-    }
-    catch (err) {
-      reject(err);
-    }
-  });
+        resolve();
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
 
-  filter = async (filter, sortBy = "") => new Promise((resolve, reject) => {
-    try {
-      resolve(db.get(this._table)
-        .filter(filter)
-        .sortBy(sortBy)
-        .value());
-    }
-    catch (err) {
-      reject(err);
-    }
-  });
+  deleteAll = async () => {
+    return new Promise((resolve, reject) => {
+      try {
+        db.get(this._table)
+          .remove({})
+          .write();
+
+        resolve();
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
+
+  filter = async (filter, sortBy = "") => {
+    return new Promise((resolve, reject) => {
+      try {
+        const items = db.get(this._table)
+          .filter(filter)
+          .sortBy(sortBy)
+          .value();
+
+        resolve(items);
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
+
+  count = async (filter) => {
+    return new Promise((resolve, reject) => {
+      try {
+        const items = db.get(this._table)
+          .filter(filter)
+          .value();
+
+        resolve(items.length);
+      }
+      catch (err) {
+        reject(err);
+      }
+    })
+  };
 }
 
 module.exports = BaseRepository;

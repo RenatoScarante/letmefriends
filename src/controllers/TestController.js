@@ -1,13 +1,19 @@
 const BaseController = require("./BaseController")
-const TestService = require("../services/TestService");
+const Service = require("../services/TestService");
 
 class TestController extends BaseController {
   constructor() {
-    super(new TestService());
+    super(new Service());
   }
 
-  async post(req, res) {
-    console.log(req)
+  init = async () => {
+    await this._service.createPersons();
+    await this._service.createRelationships();
+
+    console.log('Test created successfully');
+  }
+
+  post = (req, res) => {
     try {
       this._service
         .createPersons()
@@ -29,7 +35,7 @@ class TestController extends BaseController {
     }
   };
 
-  async delete(req, res) {
+  delete = (req, res) => {
     try {
       this._service
         .delete()

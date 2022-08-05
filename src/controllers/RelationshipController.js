@@ -1,9 +1,9 @@
 const BaseController = require("./BaseController")
-const RelationshipService = require("../services/RelationshipService");
+const Service = require("../services/RelationshipService");
 
 class RelationshipController extends BaseController {
   constructor() {
-    super(new RelationshipService());
+    super(new Service());
   }
 
   post = (req, res) => {
@@ -31,6 +31,21 @@ class RelationshipController extends BaseController {
         .get(relationship)
         .then(relationship => {
           this.success(res, { relationship });
+        })
+        .catch(message => {
+          this.error400(res, message);
+        });
+    } catch (error) {
+      this.error500(res, `Error to get a relationship, ${error.message}`);
+    }
+  };
+
+  getAll = (req, res) => {
+    try {
+      this._service
+        .getAll()
+        .then(relationships => {
+          this.success(res, relationships);
         })
         .catch(message => {
           this.error400(res, message);

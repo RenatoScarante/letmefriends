@@ -1,9 +1,9 @@
 const BaseController = require("./BaseController")
-const PersonService = require("../services/PersonService");
+const Service = require("../services/PersonService");
 
 class PersonController extends BaseController {
   constructor() {
-    super(new PersonService());
+    super(new Service());
   }
 
   post = (req, res) => {
@@ -31,6 +31,21 @@ class PersonController extends BaseController {
         .get(cpf)
         .then(person => {
           this.success(res, { person });
+        })
+        .catch(message => {
+          this.error400(res, message);
+        });
+    } catch (error) {
+      this.error500(res, `Error to get a person, ${error.message}`);
+    }
+  };
+
+  getAll = (req, res) => {
+    try {
+      this._service
+        .getAll()
+        .then(persons => {
+          this.success(res, persons);
         })
         .catch(message => {
           this.error400(res, message);
